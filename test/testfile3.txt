@@ -1,0 +1,106 @@
+int global_nums[3] = {7, 14, 21};
+const int MULTIPLIER = 3;
+int backup_arr[3];
+
+void print_array(int arr[], int size) {
+    int i;
+    printf("array elements:");
+    for (i = 0; i < size; i = i + 1) {
+        printf(" %d", arr[i]);
+    }
+    printf("\n");
+}
+
+int find_max(int arr[], int size) {
+    int max = arr[0];
+    int i;
+    for (i = 1; i < size; i = i + 1) {
+        if (arr[i] > max) {
+            max = arr[i];
+        }
+    }
+    return max;
+}
+
+void double_elements(int arr[], int size) {
+    int i;
+    for (i = 0; i < size; i = i + 1) {
+        arr[i] = arr[i] * 2;
+    }
+}
+
+void copy_array(int src[], int dst[], int size) {
+    int i;
+    for (i = 0; i < size; i = i + 1) {
+        dst[i] = src[i];
+    }
+}
+
+void test_array_init() {
+    int temp_arr[4] = {0};
+    temp_arr[1] = 5;
+    temp_arr[3] = 15;
+    printf("temp_arr: %d %d %d %d\n", temp_arr[0], temp_arr[1], temp_arr[2], temp_arr[3]);
+}
+
+void test_for_multi_assign() {
+    int i = 0;
+    int j = 0;
+    // 完整的for循环 - 有初始化、条件、迭代
+    for (i = 0, j = 0; i < 3; i = i + 1, j = j + 2) {
+        global_nums[i] = global_nums[i] + j;
+    }
+    
+    // 缺少初始化的for循环
+    for (; i > 0; i = i - 1) {
+        if (i == 1) break;
+    }
+    
+    // 缺少条件的for循环
+    for (j = 0; ; j = j + 1) {
+        if (j >= 2) break;
+    }
+    
+    // 缺少迭代的for循环
+    for (i = 0; i < 2; ) {
+        i = i + 1;
+    }
+}
+
+int main() {
+    printf("23371387\n");
+    
+    printf("global_nums[0]: %d\n", global_nums[0]);
+    
+    print_array(global_nums, 3);
+    
+    int max_val = find_max(global_nums, 3);
+    printf("max value: %d\n", max_val);
+    
+    copy_array(global_nums, backup_arr, 3);
+    double_elements(global_nums, 3);
+    print_array(global_nums, 3);
+    
+    test_array_init();
+    printf("array init completed\n");
+    
+    test_for_multi_assign();
+    print_array(global_nums, 3);
+    
+    printf("multi assign completed\n");
+    
+    int count = 0;
+    int k;
+    for (k = 1; k <= 5; k = k + 1) {
+        if (k == 3) {
+            continue;
+        }
+        count = count + 1;
+        if (count == 3) {
+            break;
+        }
+    }
+    printf("loop count: %d\n", count);
+    
+    return 0;
+}

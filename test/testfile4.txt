@@ -1,0 +1,81 @@
+const int BASE = 10;
+int global_counter = 0;
+
+void increment_counter() {
+    global_counter = global_counter + 1;
+}
+
+int multiply(int a, int b) {
+    return a * b;
+}
+
+void test_for_variants() {
+    int i;
+    for (; global_counter < 5; ) {
+        global_counter = global_counter + 1;
+    }
+    
+    int j = 0;
+    for (j = 0; ; j = j + 1) {
+        if (j >= 2) {
+            break;
+        }
+    }
+    
+    int k;
+    for (k = 0; k < 3; ) {
+        k = k + 1;
+    }
+}
+
+void test_empty_for() {
+    int j = 0;
+    for (; ; ) {
+        j = j + 1;
+        if (j >= 2) {
+            break;
+        }
+    }
+}
+
+void test_unary_plus() {
+    int temp = 3;
+    int result = +temp;
+    global_counter = global_counter + result;
+}
+
+int main() {
+    printf("23371387\n");
+    
+    int x = 5, y = 8;
+    printf("x: %d, y: %d\n", x, y);
+    
+    increment_counter();
+    increment_counter();
+    printf("global_counter: %d\n", global_counter);
+    
+    int result = multiply(x, y);
+    printf("multiply result: %d\n", result);
+    
+    if (x < y) {
+        printf("x is less than y\n");
+    }
+    
+    if (result > 50) {
+        printf("result is large\n");
+    } else {
+        printf("result is small\n");
+    }
+    
+    test_for_variants();
+    printf("after for variants: %d\n", global_counter);
+    
+    test_empty_for();
+    test_unary_plus();
+    printf("after tests: %d\n", global_counter);
+    
+    int a = 15, b = 4;
+    printf("arithmetic: %d %d %d %d %d\n", a+b, a-b, a*b, a/b, a%b);
+    
+    return 0;
+}

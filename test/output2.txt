@@ -1,0 +1,11 @@
+23371387
+static_count: 1
+static_count: 3
+matrix: 1 4 9 16
+empty_arr: 100 200 300
+processed: 1 2 6
+const array: 10 20 30
+matrix sum: 30
+modified matrix: 1 5 11 19
+multi param: 6
+B level test finished
