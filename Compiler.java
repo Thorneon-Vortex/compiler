@@ -1,5 +1,6 @@
 import frontend.Lexer;
 import frontend.LexerError;
+import frontend.Token;
 import frontend.TokenType;
 
 import java.io.IOException;
@@ -12,7 +13,6 @@ import java.util.List;
 
 // 为了方便存储Token信息，我们创建一个简单的记录类（Record）
 // Java 16+
-record Token(TokenType type, String value, int lineNum) {}
 public class Compiler {
     public static void main(String[] args) {
         String inputFile = "testfile.txt";
