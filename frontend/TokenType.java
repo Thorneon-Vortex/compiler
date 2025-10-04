@@ -27,6 +27,8 @@ public enum TokenType {
     // 运算符 (Operators)
     NOT("!"),                   // !
     AND("&&"),                  // &&
+    ERRORAND("&"),              // &
+    ERROROR("|"),               // |
     OR("||"),                   // ||
     PLUS("+"),                  // +
     MINU("-"),                  // -
@@ -94,6 +96,12 @@ public enum TokenType {
             case "printf": return PRINTFTK;
             default: return null;
         }
+    }
+
+    public static boolean isStmt(TokenType type) {
+        return type == IFTK || type == FORTK || type == BREAKTK
+                || type == CONTINUETK || type == RETURNTK || type == PRINTFTK
+                || type == IDENFR;
     }
     
     /**

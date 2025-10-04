@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5780e72b-ce6c-480b-8806-c8cadc42a677" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Compare.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/compileDemo.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/error/CompilerError.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.cursor/rules/wordanalyze.mdc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compileDemo.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Compiler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Compiler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/compileDemo.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/error.txt" beforeDir="false" afterPath="$PROJECT_DIR$/error.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Lexer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/LexerError.java" beforeDir="false" afterPath="$PROJECT_DIR$/error/LexerError.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/TokenType.java" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/TokenType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/.cursor/rules/wordanalyze.mdc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/.idea/compileDemo.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/Compiler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/Compiler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/ast/CompUnitNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/ast/CompUnitNode.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/ast/Node.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/ast/Node.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/compileDemo.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/error.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/error.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/frontend/Lexer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/frontend/Lexer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/frontend/LexerError.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/frontend/Token.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/frontend/Token.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/frontend/TokenType.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/frontend/TokenType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/lexer.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/testfile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/testfile.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser/SyntaxError.java" beforeDir="false" afterPath="$PROJECT_DIR$/error/SyntaxError.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/output2.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testfile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testfile.txt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="customMavenHome" value="D:\develop\apache-maven-3.9.11" />
+        <option name="mavenHomeTypeForPersistence" value="CUSTOM" />
+        <option name="userSettingsFile" value="D:\develop\apache-maven-3.9.11\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="MavenRunner">
+    <option name="jreName" value="1.8" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 7
+}]]></component>
+  <component name="ProjectId" id="33baaNWlfvbrZxhjzKnhjWO1sw1" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Compare.executor": "Run",
+    "Application.Compiler.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "settings.editor.selected.configurable": "preferences.lookFeel"
+  }
+}]]></component>
+  <component name="RunManager" selected="Application.Compiler">
+    <configuration name="Compare" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Compare" />
+      <module name="compileDemo" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Compiler" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Compiler" />
+      <module name="compileDemo" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Compiler" />
+        <item itemvalue="Application.Compare" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5780e72b-ce6c-480b-8806-c8cadc42a677" name="Changes" comment="" />
+      <created>1759588289756</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1759588289756</updated>
+    </task>
+    <servers />
+  </component>
+</project>

@@ -1,5 +1,7 @@
 package frontend;
 
+import error.LexerError;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -218,7 +220,7 @@ public class Lexer {
                     // TODO: 在这里记录错误信息 (行号: lineNum, 错误类型: a)
                     // 即使是错误的，也要设置一个类型，让语法分析器知道这里有个东西
                     // 暂时可以设为一个ERROR类型，或者根据具体要求处理
-                    tokenType = TokenType.ERROR; // 假设有一个ERROR类型
+                    tokenType = TokenType.ERRORAND; // 假设有一个ERROR类型
                 }
                 break;
             case '|':
@@ -230,7 +232,7 @@ public class Lexer {
                     // a类错误！记录下来
                     token = "|";
                     errors.add(new LexerError(this.lineNum, "a"));
-                    tokenType = TokenType.ERROR;
+                    tokenType = TokenType.ERROROR;
                 }
                 break;
             case '=':
@@ -322,7 +324,7 @@ public class Lexer {
                 tokenType = TokenType.RBRACE;
                 break;
             default:
-                // 未知符号，也可以作为错误处理
+                // 未知符号，作为错误处理
                 token = String.valueOf(c);
                 tokenType = TokenType.ERROR;
                 break;

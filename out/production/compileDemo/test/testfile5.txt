@@ -1,0 +1,50 @@
+int global_var = 100;
+const int CONSTANT = 42;
+
+int add_numbers(int a, int b) {
+    return a + b;
+}
+
+void test_void() {
+    global_var = global_var + 10;
+}
+
+void test_for_empty_parts() {
+    int i = 0;
+    for (; i < 2; ) {
+        i = i + 1;
+        global_var = global_var + 1;
+    }
+}
+
+void test_unary_minus() {
+    int val = 5;
+    int neg_val = 0 - val;
+    global_var = global_var + neg_val;
+}
+
+int main() {
+    printf("23371387\n");
+    
+    int a = 20;
+    int b = 3;
+    printf("add: %d\n", a+b);
+    printf("sub: %d\n", a-b);
+    printf("mul: %d\n", a*b);
+    printf("div: %d\n", a/b);
+    printf("mod: %d\n", a%b);
+    
+    int func_result = add_numbers(a, b);
+    printf("function result: %d\n", func_result);
+    
+    test_void();
+    printf("global_var: %d\n", global_var);
+    
+    test_for_empty_parts();
+    test_unary_minus();
+    printf("after tests: %d\n", global_var);
+    
+    printf("expression test done\n");
+    
+    return 0;
+}

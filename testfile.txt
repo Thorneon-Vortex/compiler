@@ -1,8 +1,7 @@
+int a;
 int main(){
     int c;
-    c = getint()
-    if(1 & 2){
-        printf("output is %d\n", c);
-    }
-    return 0;
+    c= getint();
+    printf("%d",c);
+    return c;
 }
