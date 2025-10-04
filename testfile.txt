@@ -1,8 +1,8 @@
-const int array[2] = {1,2};
-
 int main(){
     int c;
-    c = getint();
-    printf("output is %d",c);
-    return c;
+    c = getint()
+    if(1 & 2){
+        printf("output is %d\n", c);
+    }
+    return 0;
 }
