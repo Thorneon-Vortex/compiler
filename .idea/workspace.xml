@@ -6,14 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5780e72b-ce6c-480b-8806-c8cadc42a677" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/TokenType.java" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/TokenType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/parser.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/parser.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/parser/Parser$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/parser/Parser$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/parser/Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/parser/Parser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/compileDemo/testfile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/compileDemo/testfile.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser.txt" beforeDir="false" afterPath="$PROJECT_DIR$/parser.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/compileDemo.zip" beforeDir="false" afterPath="$PROJECT_DIR$/compileDemo.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parser/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/parser/Parser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testfile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testfile.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

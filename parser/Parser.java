@@ -109,7 +109,7 @@ public class Parser {
                 // 声明const static int s;
                 parseFuncDef();
             } else if (peek() == TokenType.CONSTTK || peek() == TokenType.STATICTK
-            || peek() == TokenType.INTTK) {
+                    || peek() == TokenType.INTTK) {
                 //
                 parseDecl();
             } else {
@@ -117,14 +117,14 @@ public class Parser {
                 nextToken();
             }
         }
-        
+
         // 分析主函数
         if (peek() == TokenType.INTTK && peek(1) == TokenType.MAINTK) {
             parseMainFuncDef();
         }
 
         printSyntaxComponent("CompUnit");
-        return null; // TODO: 返回CompUnitNode
+        return null;
     }
 
     private Node parseFuncDef() {
@@ -369,7 +369,8 @@ public class Parser {
     private Node parseStmt() {
         switch (peek()) {
             case LBRACE: // Block
-                return parseBlock();
+                parseBlock();
+                break;
             case IFTK:
                 // 'if' '(' Cond ')' Stmt [ 'else' Stmt ]
                 consume(); // if
@@ -428,52 +429,33 @@ public class Parser {
                 consume(TokenType.RPARENT, "j"); // ')' 错误检查 j
                 consume(TokenType.SEMICN, "i"); // ';' 错误检查 i
                 break;
-            case SEMICN: // [Exp] ';' -> 空语句
-                consume(TokenType.SEMICN, "i");
+            case SEMICN:
+                consume(TokenType.SEMICN, "i"); // 明确处理空语句
                 break;
             default:
-                // LVal '=' Exp ';'  或  Exp ';'
-                // 这里需要预读来区分。如果 Exp 后是 ASSIGN，则是赋值语句。
-                // 这是一个难点，需要更复杂的预读，或者在解析Exp后判断。
-                // 一个简化策略是：先尝试按Exp解析，如果解析完后是'='，则确定为赋值语句。
-//                Node exp = parseExp(); // parseExp内部会解析LVal
-//                if (peek() == TokenType.ASSIGN) {
-//                    // 这是 LVal = Exp;
-//                    // TODO: 需要回溯或调整 parseExp 的结构来获取 LVal
-//                    // ...
-//                }
-//                consume(TokenType.SEMICN, "i"); // 错误检查 i
-//                break;
-                //预读，看看是先出现=还是;
+                // 能进入这里的，必然是 LVal=Exp; 或 Exp; (且Exp不为空)
                 int i = 0;
-                boolean flag = false;
-                while (true) {
-                    if (peek(i) == TokenType.EOF) {
-                        break;
-                    }
+                boolean isAssign = false;
+                while (peek(i) != TokenType.SEMICN && peek(i) != TokenType.EOF) {
                     if (peek(i) == TokenType.ASSIGN) {
-                        flag = true;
-                        break;
-                    }
-                    if (peek(i) == TokenType.SEMICN) {
+                        isAssign = true;
                         break;
                     }
                     i++;
                 }
-                if (flag) {
-                    // 这是 LVal = Exp;
+
+                if (isAssign) {
                     parseLVal();
-                    consume(); // '='
+                    consume(); // =
                     parseExp();
-                    consume(TokenType.SEMICN, "i"); // ';'
                 } else {
-                    // 这是 Exp;
-                    if (peek() != TokenType.SEMICN && peek() != TokenType.EOF) {
-                        parseExp();
-                    }
-                    consume(TokenType.SEMICN, "i"); // ';' 错误检查 i
+                    parseExp(); // 移除了 if，因为这里必然有表达式
                 }
+                consume(TokenType.SEMICN, "i"); // 最后必须有分号
+                break;
         }
+
+
 
         printSyntaxComponent("Stmt");
         return null;
