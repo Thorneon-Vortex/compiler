@@ -104,14 +104,14 @@ public class Parser {
                 // 遇到主函数，跳出循环
                 break;
             }
-            if (peek() == TokenType.CONSTTK || peek() == TokenType.STATICTK || 
-                (peek() == TokenType.INTTK && peek(2) != TokenType.LPARENT)) {
-                // 声明
-                parseDecl();
-            } else if ((peek() == TokenType.VOIDTK || peek() == TokenType.INTTK) && 
-                       peek(1) == TokenType.IDENFR && peek(2) == TokenType.LPARENT) {
-                // 函数定义
+            if ((peek() == TokenType.VOIDTK || peek() == TokenType.INTTK) &&
+                    peek(1) == TokenType.IDENFR && peek(2) == TokenType.LPARENT) {
+                // 声明const static int s;
                 parseFuncDef();
+            } else if (peek() == TokenType.CONSTTK || peek() == TokenType.STATICTK
+            || peek() == TokenType.INTTK) {
+                //
+                parseDecl();
             } else {
                 // 无法识别的结构，跳过当前token避免死循环
                 nextToken();
@@ -131,7 +131,8 @@ public class Parser {
         parseFuncType();
         consume();//indent
         consume();//(
-        parseFuncFParams();
+        if (peek() != TokenType.RPARENT)
+            parseFuncFParams();
         consume(TokenType.RPARENT, "j");
         parseBlock();
         printSyntaxComponent("FuncDef");
@@ -148,40 +149,51 @@ public class Parser {
         return null;
     }
 
-    private Node parseBlockItem() {
-//        if (peek() == TokenType.IDENFR) {
+//    private Node parseBlockItem() {
+////        if (peek() == TokenType.IDENFR) {
+////            parseStmt();
+////        } else {
+////            parseDecl();
+////        }
+//        if (TokenType.isStmt(peek())) {
 //            parseStmt();
 //        } else {
-//            parseDecl();
+//            int i = 0;
+//            boolean flag = false;
+//            while (true) {
+//                TokenType type = peek(i);
+//                if (type == TokenType.EOF) {
+//                    //细节，这也算没读到int，程序虽然缺少；
+//                    //但不在这里处理，之后调用parseStmt()处理
+//                    break;
+//                }
+//                if (peek(i) == TokenType.INTTK) {
+//                    flag = true;
+//                    break;
+//                }
+//                if (peek(i) == TokenType.SEMICN) {
+//                    break;
+//                }
+//                i++;
+//            }
+//            if (flag) {
+//                parseDecl();
+//            } else {
+//                parseStmt();
+//            }
 //        }
-        if (TokenType.isStmt(peek())) {
-            parseStmt();
+//        //题目要求，不需要输出
+//        return null;
+//    }
+
+    private Node parseBlockItem() {
+        // Decl的FIRST集是 {CONSTTK, INTTK, STATICTK}
+        if (peek() == TokenType.CONSTTK || peek() == TokenType.INTTK || peek() == TokenType.STATICTK) {
+            parseDecl();
         } else {
-            int i = 0;
-            boolean flag = false;
-            while (true) {
-                TokenType type = peek(i);
-                if (type == TokenType.EOF) {
-                    //细节，这也算没读到int，程序虽然缺少；
-                    //但不在这里处理，之后调用parseStmt()处理
-                    break;
-                }
-                if (peek(i) == TokenType.INTTK) {
-                    flag = true;
-                    break;
-                }
-                if (peek(i) == TokenType.SEMICN) {
-                    break;
-                }
-                i++;
-            }
-            if (flag) {
-                parseDecl();
-            } else {
-                parseStmt();
-            }
+            parseStmt();
         }
-        //题目要求，不需要输出
+        // BlockItem本身不要求输出
         return null;
     }
 
@@ -251,6 +263,7 @@ public class Parser {
         // 错误检查 i: 缺少分号
         consume(TokenType.SEMICN, "i");
         // <ConstDecl> 不要求输出，但其子节点会输出
+        printSyntaxComponent("ConstDecl");
         return null;
     }
 
@@ -315,7 +328,7 @@ public class Parser {
         }
         consume(TokenType.SEMICN, "i");
         printSyntaxComponent("VarDecl");
-        return null; // TODO: 返回 VarDeclNode
+        return null;
     }
 
     // VarDef → Ident [ '[' ConstExp ']' ] | Ident [ '[' ConstExp ']' ] '=' InitVal
@@ -331,7 +344,7 @@ public class Parser {
             parseInitVal();
         }
         printSyntaxComponent("VarDef");
-        return null; // TODO: 返回 VarDefNode
+        return null;
     }
 
     private Node parseInitVal() {
@@ -392,7 +405,7 @@ public class Parser {
                 consume(TokenType.SEMICN, "i"); // 错误检查 i
                 break;
             case CONTINUETK:
-                consume(); // break or continue
+                consume(); //continue
                 consume(TokenType.SEMICN, "i"); // 错误检查 i
                 break;
             case RETURNTK:
@@ -416,7 +429,7 @@ public class Parser {
                 consume(TokenType.SEMICN, "i"); // ';' 错误检查 i
                 break;
             case SEMICN: // [Exp] ';' -> 空语句
-                consume();
+                consume(TokenType.SEMICN, "i");
                 break;
             default:
                 // LVal '=' Exp ';'  或  Exp ';'
@@ -463,7 +476,7 @@ public class Parser {
         }
 
         printSyntaxComponent("Stmt");
-        return null; // TODO: 返回 StmtNode
+        return null;
     }
 
     //ForStmt → LVal '=' Exp { ',' LVal '=' Exp }
@@ -491,11 +504,13 @@ public class Parser {
     // 消除左递归: LAndExp { '||' LAndExp }
     private Node parseLOrExp() {
         parseLAndExp();
+        printSyntaxComponent("LOrExp");
         while (peek() == TokenType.OR || peek() == TokenType.ERROROR) {
             consume();
             parseLAndExp();
+            printSyntaxComponent("LOrExp");
         }
-        printSyntaxComponent("LOrExp");
+        //printSyntaxComponent("LOrExp");
         return null;
     }
 
@@ -503,12 +518,14 @@ public class Parser {
     //消除左递归: EqExp { '&&' EqExp }
     private Node parseLAndExp() {
         parseEqExp();
+        printSyntaxComponent("LAndExp");
         //注意这里认为&也是逻辑与，这里不处理。避免错误雪崩
         while (peek() == TokenType.AND || peek() == TokenType.ERRORAND) {
             consume();
             parseEqExp();
+            printSyntaxComponent("LAndExp");
         }
-        printSyntaxComponent("LAndExp");
+        //printSyntaxComponent("LAndExp");
         return null;
     }
 
@@ -516,11 +533,13 @@ public class Parser {
     //消除左递归: RelExp { ('==' | '!=') RelExp }
     private Node parseEqExp() {
         parseRelExp();
+        printSyntaxComponent("EqExp");
         while (peek() == TokenType.EQL || peek() == TokenType.NEQ) {
             consume();
             parseRelExp();
+            printSyntaxComponent("EqExp");
         }
-        printSyntaxComponent("EqExp");
+        //printSyntaxComponent("EqExp");
         return null;
     }
 
@@ -528,11 +547,13 @@ public class Parser {
     //消除左递归: AddExp { ('<' | '>' | '<=' | '>=') AddExp }
     private Node parseRelExp() {
         parseAddExp();
+        printSyntaxComponent("RelExp");
         while (peek() == TokenType.LSS || peek() == TokenType.GRE || peek() == TokenType.LEQ || peek() == TokenType.GEQ) {
             consume();
             parseAddExp();
+            printSyntaxComponent("RelExp");
         }
-        printSyntaxComponent("RelExp");
+        //printSyntaxComponent("RelExp");
         return null;
     }
 
@@ -547,22 +568,26 @@ public class Parser {
     // 注意：文法是左递归的，需要改写成非左递归形式进行分析
     private Node parseAddExp() {
         parseMulExp();
+        printSyntaxComponent("AddExp");
         while (peek() == TokenType.PLUS || peek() == TokenType.MINU) {
             consume();
             parseMulExp();
+            printSyntaxComponent("AddExp");
         }
-        printSyntaxComponent("AddExp");
+        //printSyntaxComponent("AddExp");
         return null;
     }
 
     //MulExp → UnaryExp | MulExp ('*' | '/' | '%') UnaryExp
     private Node parseMulExp() {
         parseUnaryExp();
+        printSyntaxComponent("MulExp");
         while (peek() == TokenType.MULT || peek() == TokenType.DIV || peek() == TokenType.MOD) {
             consume();
             parseUnaryExp();
+            printSyntaxComponent("MulExp");
         }
-        printSyntaxComponent("MulExp");
+        //printSyntaxComponent("MulExp");
         return null;
     }
 

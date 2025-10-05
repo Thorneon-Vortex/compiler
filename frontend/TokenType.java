@@ -101,7 +101,7 @@ public enum TokenType {
     public static boolean isStmt(TokenType type) {
         return type == IFTK || type == FORTK || type == BREAKTK
                 || type == CONTINUETK || type == RETURNTK || type == PRINTFTK
-                || type == IDENFR;
+                || type == IDENFR || type == LBRACE;//(:Block
     }
     
     /**
