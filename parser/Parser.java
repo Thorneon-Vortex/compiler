@@ -131,7 +131,7 @@ public class Parser {
         parseFuncType();
         consume();//indent
         consume();//(
-        if (peek() != TokenType.RPARENT)
+        if (peek() == TokenType.INTTK)
             parseFuncFParams();
         consume(TokenType.RPARENT, "j");
         parseBlock();
@@ -387,15 +387,16 @@ public class Parser {
                 // 'for' '(' [ForStmt] ';' [Cond] ';' [ForStmt] ')' Stmt
                 consume(); // for
                 consume(); // '('
-                if (peek() != TokenType.SEMICN) {
+                if (peek() == TokenType.IDENFR) {
                     parseForStmt();
                 }
                 consume(TokenType.SEMICN, "i"); // ';'
-                if (peek() != TokenType.SEMICN) {
+                if (peek() == TokenType.IDENFR || peek() == TokenType.LPARENT || peek() == TokenType.INTCON
+                 || peek() == TokenType.PLUS || peek() == TokenType.MINU || peek() == TokenType.NOT) {
                     parseCond();
                 }
                 consume(TokenType.SEMICN, "i"); // ';'
-                if (peek() != TokenType.RPARENT) {
+                if (peek() == TokenType.IDENFR) {
                     parseForStmt();
                 }
                 consume(TokenType.RPARENT, "j"); // ')'
@@ -412,7 +413,8 @@ public class Parser {
             case RETURNTK:
                 consume(); // return
                 // [Exp]
-                if (peek() != TokenType.SEMICN) {
+                if (peek() == TokenType.IDENFR || peek() == TokenType.LPARENT || peek() == TokenType.INTCON
+                 || peek() == TokenType.PLUS || peek() == TokenType.MINU || peek() == TokenType.NOT) {
                     parseExp();
                 }
                 consume(TokenType.SEMICN, "i"); // 错误检查 i
