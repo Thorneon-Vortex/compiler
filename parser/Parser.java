@@ -578,7 +578,11 @@ public class Parser {
         if (peek() == TokenType.IDENFR && peek(1) == TokenType.LPARENT) {
             consume(); // Ident
             consume(); // '('
-            if (peek() != TokenType.RPARENT) {
+//            if (peek() != TokenType.RPARENT) {
+//                parseFuncRParams();
+//            }
+            if (peek() == TokenType.LPARENT || peek() == TokenType.IDENFR || peek() == TokenType.INTCON
+                    || peek() == TokenType.PLUS || peek() == TokenType.MINU || peek() == TokenType.NOT) {
                 parseFuncRParams();
             }
             consume(TokenType.RPARENT, "j"); // ')'
