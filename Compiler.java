@@ -29,7 +29,7 @@ public class Compiler {
         List<CompilerError> allErrors = new ArrayList<>();
         List<Token> tokens;
 
-        try {
+        try(StringWriter stringWriter = new StringWriter()) {
             // --- 读取源代码 ---
             String sourceCode = new String(Files.readAllBytes(Paths.get(inputFile)), StandardCharsets.UTF_8);
 
@@ -62,7 +62,7 @@ public class Compiler {
 
             // 使用 StringWriter 来缓存正确的输出。
             // 这样，如果最后发现了任何错误，我们就可以不输出 parser.txt，只输出 error.txt。
-            StringWriter stringWriter = new StringWriter();
+            //StringWriter stringWriter = new StringWriter();
             try (PrintWriter parserOutputWriter = new PrintWriter(stringWriter)) {
 
                 Parser parser = new Parser(tokens, parserOutputWriter);
@@ -103,5 +103,7 @@ public class Compiler {
             System.err.println("Error processing file: " + e.getMessage());
             e.printStackTrace();
         }
+        //
+
     }
 }
