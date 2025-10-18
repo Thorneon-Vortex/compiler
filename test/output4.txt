@@ -1,9 +1,0 @@
-23371387
-x: 5, y: 8
-global_counter: 2
-multiply result: 40
-x is less than y
-result is small
-after for variants: 5
-after tests: 8
-arithmetic: 19 11 60 3 3

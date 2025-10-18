@@ -1,3 +1,5 @@
+import ast.Node;
+import ast.topLevelNodes.CompUnit;
 import error.CompilerError;
 import frontend.Lexer;
 import error.LexerError;
@@ -5,6 +7,8 @@ import frontend.Token;
 import frontend.TokenType;
 import error.SyntaxError;
 import parser.Parser;
+import symbol.Symbol;
+import visitor.SemanticVisitor;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,14 +26,15 @@ public class Compiler {
     public static void main(String[] args) {
         // --- 文件路径定义 ---
         String inputFile = "testfile.txt";
-        String outputFile = "parser.txt";
+        String outputFile = "symbol.txt";
         String errorFile = "error.txt";
 
         // --- 核心数据结构 ---
         List<CompilerError> allErrors = new ArrayList<>();
         List<Token> tokens;
 
-        try(StringWriter stringWriter = new StringWriter()) {
+        CompUnit compUnit = null;
+        try {
             // --- 读取源代码 ---
             String sourceCode = new String(Files.readAllBytes(Paths.get(inputFile)), StandardCharsets.UTF_8);
 
@@ -62,15 +67,20 @@ public class Compiler {
 
             // 使用 StringWriter 来缓存正确的输出。
             // 这样，如果最后发现了任何错误，我们就可以不输出 parser.txt，只输出 error.txt。
-            //StringWriter stringWriter = new StringWriter();
+            StringWriter stringWriter = new StringWriter();
             try (PrintWriter parserOutputWriter = new PrintWriter(stringWriter)) {
 
                 Parser parser = new Parser(tokens, parserOutputWriter);
-                parser.parse(); // 启动语法分析过程
+                compUnit = parser.parse();// 启动语法分析过程,并拿到语法树根节点
 
                 // 收集语法阶段发现的错误
                 allErrors.addAll(parser.getErrors());
             }
+            //语义分析
+            SemanticVisitor semanticVisitor = new SemanticVisitor();
+            semanticVisitor.analyze(compUnit);
+
+            allErrors.addAll(semanticVisitor.getErrors());
 
 
             // ===================================
@@ -84,8 +94,15 @@ public class Compiler {
                 Collections.sort(allErrors);
 
                 try (PrintWriter errorWriter = new PrintWriter(errorFile, StandardCharsets.UTF_8)) {
-                    for (CompilerError error : allErrors) {
-                        errorWriter.println(error);
+//                    for (CompilerError error : allErrors) {
+//                        errorWriter.println(error);
+//                    }
+                    for(int i = 0;i < allErrors.size();i++) {
+                        CompilerError compilerError = allErrors.get(i);
+                        if (i < allErrors.size()-1 && compilerError.equals(allErrors.get(i+1))){
+                            continue;
+                        }
+                        errorWriter.println(compilerError);
                     }
                 }
                 System.out.println("Errors found during compilation. Output written to " + errorFile);
@@ -94,7 +111,29 @@ public class Compiler {
                 // 如果没有任何错误，则将缓存的正确分析过程输出到 parser.txt
 
                 try (PrintWriter outputWriter = new PrintWriter(outputFile, StandardCharsets.UTF_8)) {
-                    outputWriter.print(stringWriter.toString());
+                    //outputWriter.print(stringWriter.toString());
+                    //按顺序输出符号表中字段
+//                    semanticVisitor.getAllSymbols().forEach(symbol -> {
+//                        outputWriter.println(symbol.toString());
+//                    });
+                    List<Symbol> allSymbols = semanticVisitor.getAllSymbols();
+//                    for (Symbol symbol : allSymbols) {
+//                        if (symbol.getName().equals("main") || symbol.getName().equals("getint")) {
+//                            continue;
+//                        }
+//
+//                        outputWriter.println(symbol.toString());
+//                    }
+                    for(int i = 0; i < allSymbols.size(); i++) {
+                        Symbol symbol = allSymbols.get(i);
+                        if (symbol.getName().equals("main") || symbol.getName().equals("getint")) {
+                            continue;
+                        }
+//                        if (i < allSymbols.size()-1 && symbol.getName().equals(allSymbols.get(i+1).getName())) {//去重
+//                            continue;
+//                        }
+                        outputWriter.println(symbol.toString());
+                    }
                 }
                 System.out.println("Compilation successful. Output written to " + outputFile);
             }
@@ -103,7 +142,5 @@ public class Compiler {
             System.err.println("Error processing file: " + e.getMessage());
             e.printStackTrace();
         }
-        //
-
     }
 }

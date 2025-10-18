@@ -1,6 +1,18 @@
 package parser;
 
+import ast.Declaration;
+import ast.Expression;
 import ast.Node; // 之后会创建更多Node
+import ast.Statement;
+import ast.declarationNodes.InitVal;
+import ast.declarationNodes.VarDecl;
+import ast.declarationNodes.VarDef;
+import ast.expressionNodes.*;
+import ast.statementNodes.*;
+import ast.topLevelNodes.CompUnit;
+import ast.topLevelNodes.FuncDef;
+import ast.topLevelNodes.FuncParam;
+import ast.topLevelNodes.mainFuncDef;
 import error.SyntaxError;
 import frontend.Token;
 import frontend.TokenType;
@@ -90,14 +102,15 @@ public class Parser {
 
 
     // ----- 递归下降分析方法（主入口）-----
-    public Node parse() {
+    public CompUnit parse() {
         return parseCompUnit();
     }
 
     // 接下来我们将在这里填充所有的 parseXXX() 方法
     // ...
     // CompUnit → {Decl} {FuncDef} MainFuncDef
-    private Node parseCompUnit() {
+    private CompUnit parseCompUnit() {
+        List<Declaration> declarations = new ArrayList<>();
         // 循环分析全局声明和函数定义
         while (peek() != TokenType.EOF) {
             if (peek() == TokenType.INTTK && peek(1) == TokenType.MAINTK) {
@@ -107,11 +120,11 @@ public class Parser {
             if ((peek() == TokenType.VOIDTK || peek() == TokenType.INTTK) &&
                     peek(1) == TokenType.IDENFR && peek(2) == TokenType.LPARENT) {
                 // 声明const static int s;
-                parseFuncDef();
+                declarations.add(parseFuncDef());
             } else if (peek() == TokenType.CONSTTK || peek() == TokenType.STATICTK
                     || peek() == TokenType.INTTK) {
                 //
-                parseDecl();
+                declarations.add(parseDecl());
             } else {
                 // 无法识别的结构，跳过当前token避免死循环
                 nextToken();
@@ -120,33 +133,45 @@ public class Parser {
 
         // 分析主函数
         if (peek() == TokenType.INTTK && peek(1) == TokenType.MAINTK) {
-            parseMainFuncDef();
+            declarations.add(parseMainFuncDef());
         }
 
         printSyntaxComponent("CompUnit");
-        return null;
+        return new CompUnit(declarations);
     }
 
-    private Node parseFuncDef() {
-        parseFuncType();
+    private Declaration parseFuncDef() {
+        Token funcType = parseFuncType();
+        int lineNum = currentToken.lineNum();//标识符行号
+        Token ident = currentToken;
         consume();//indent
         consume();//(
+        List<FuncParam> params = null;
         if (peek() == TokenType.INTTK)
-            parseFuncFParams();
+            params = parseFuncFParams();
         consume(TokenType.RPARENT, "j");
-        parseBlock();
+        Block body = parseBlock();
         printSyntaxComponent("FuncDef");
-        return null;
+        return new FuncDef(funcType, ident, params, body);
     }
 
-    private Node parseBlock() {
-        consume();
+    private Block parseBlock() {
+        int lineNum = currentToken.lineNum();
+        List<Statement> items = new ArrayList<>();
+        List<Integer> returnPos = new ArrayList<>();
+        consume();//{
         while (peek() != TokenType.RBRACE) {
-            parseBlockItem();
+            Statement tmp = parseBlockItem();
+            items.add(tmp);
+            if (tmp instanceof ReturnStmt) {
+                //return的位置
+                returnPos.add(items.size()-1);
+            }
         }
-        consume();
+        Token rightBrace = currentToken;
+        consume();//}
         printSyntaxComponent("Block");
-        return null;
+        return new Block(lineNum, items, rightBrace, returnPos);
     }
 
 //    private Node parseBlockItem() {
@@ -186,253 +211,307 @@ public class Parser {
 //        return null;
 //    }
 
-    private Node parseBlockItem() {
+    private Statement parseBlockItem() {
         // Decl的FIRST集是 {CONSTTK, INTTK, STATICTK}
+        Statement item;
         if (peek() == TokenType.CONSTTK || peek() == TokenType.INTTK || peek() == TokenType.STATICTK) {
-            parseDecl();
+            item = parseDecl();
         } else {
-            parseStmt();
+            item = parseStmt();
         }
         // BlockItem本身不要求输出
-        return null;
+        return item;
     }
 
-    private Node parseFuncFParams() {
+    private List<FuncParam> parseFuncFParams() {
+        List<FuncParam> params = new ArrayList<>();
         if (peek() != TokenType.RPARENT) {
-            parseFuncFParam();
+            params.add(parseFuncFParam());
             while (peek() == TokenType.COMMA) {
                 consume(); // 消费 ','
-                parseFuncFParam();
+                params.add(parseFuncFParam());
             }
         }
         printSyntaxComponent("FuncFParams");
-        return null;
+        return params;
     }
 
-    private Node parseFuncFParam() {
-        parseBType();
+    private FuncParam parseFuncFParam() {
+        Token bType = parseBType();
+        Token ident = currentToken;
+        boolean isArray = false;
         consume(); // Ident
         if (peek() == TokenType.LBRACK) {
+            isArray = true;
             consume(); // '['
             consume(TokenType.RBRACK, "k"); // ']'
         }
         printSyntaxComponent("FuncFParam");
-        return null;
+        return new FuncParam(bType, ident, isArray);
     }
 
-    private Node parseFuncType() {
+    private Token parseFuncType() {
+        Token token = currentToken;
         if (peek() == TokenType.VOIDTK) {
             consume();
         } else if (peek() == TokenType.INTTK) {
             consume();
         }
         printSyntaxComponent("FuncType");
-        return null;
+        return token;
     }
 
-    private Node parseMainFuncDef() {
+    private Declaration parseMainFuncDef() {
         consume();//int
+        int lineNum = currentToken.lineNum();
         consume();//main
         consume();//(
         consume(TokenType.RPARENT, "j");//)
-        parseBlock();
+        Block body = parseBlock();
         printSyntaxComponent("MainFuncDef");
-        return null;
+        return new mainFuncDef(lineNum,body);
     }
 
     // Decl → ConstDecl | VarDecl
-    private Node parseDecl() {
+    private VarDecl parseDecl() {
         if (peek() == TokenType.CONSTTK) {
-            parseConstDecl();
+            return parseConstDecl();
         } else {
-            parseVarDecl();
+            return parseVarDecl();
         }
         // 注意: <Decl> 不要求输出
-        return null;
+        //return null;
     }
 
     // ConstDecl → 'const' BType ConstDef { ',' ConstDef } ';'
-    private Node parseConstDecl() {
+    private VarDecl parseConstDecl() {
+        Token constToken = currentToken;
         consume(TokenType.CONSTTK, "expect reserved word const"); // 假设有个错误码，实际上不可能出现错误。
-        parseBType();
-        parseConstDef();
+        Token bType = parseBType();
+        List<VarDef> varDefs = new ArrayList<>();
+        varDefs.add(parseConstDef());
         while (peek() == TokenType.COMMA) {
             consume(); // 消费 ','
-            parseConstDef();
+            varDefs.add(parseConstDef());
         }
         // 错误检查 i: 缺少分号
         consume(TokenType.SEMICN, "i");
         // <ConstDecl> 不要求输出，但其子节点会输出
         printSyntaxComponent("ConstDecl");
-        return null;
+        return new VarDecl(true,false,bType, varDefs);
     }
 
-    private Node parseConstDef() {
+    private VarDef parseConstDef() {
+        Token ident = currentToken;
         consume(); // Ident
+        Expression indexExp = null;
         if (peek() == TokenType.LBRACK) {
             consume(); // '['
-            parseConstExp();
+            indexExp = parseConstExp();
             consume(TokenType.RBRACK, "k"); // ']'
         }
         consume(); // '='
-        parseConstInitVal();
+        InitVal initVal = parseConstInitVal();
         printSyntaxComponent("ConstDef");
-        return null;
+        return new VarDef(ident,indexExp,initVal);
     }
 
-    private Node parseConstInitVal() {
+    private InitVal parseConstInitVal() {
+        boolean isExpression = false;
+        Expression singleValue = null;
+        List<Expression> listValue = null;
         //ConstInitVal → ConstExp | '{' [ ConstExp { ',' ConstExp } ] '}'
         if (peek() == TokenType.LBRACE) {
+            int lineNum = currentToken.lineNum();
             //消耗{
             consume();
             //一维数组初值
             if (peek() != TokenType.RBRACE) {
-                parseConstExp();
+                listValue = new ArrayList<>();
+                listValue.add(parseConstExp());
                 while (peek() == TokenType.COMMA) {
                     consume(); // ','
-                    parseConstExp();
+                    listValue.add(parseConstExp());
                 }
             }
             //吃掉}
             consume();
+            return new InitVal(lineNum,listValue);
         } else {
-            parseConstExp();
+            isExpression = true;
+            singleValue = parseConstExp();
+            return new InitVal(singleValue);
         }
-        printSyntaxComponent("ConstInitVal");
-        return null;
+        //printSyntaxComponent("ConstInitVal");
+
     }
 
-    private Node parseConstExp() {
-        parseAddExp();
+    private Expression parseConstExp() {
+        Expression exp = parseAddExp();
         printSyntaxComponent("ConstExp");
-        return null;
+        return exp;
     }
 
     // BType → 'int'
-    private Node parseBType() {
+    private Token parseBType() {
+        Token token = currentToken;
         consume(TokenType.INTTK, "expect int");
         // <BType> 不要求输出
-        return null;
+        return token;
     }
 
     // VarDecl → [ 'static' ] BType VarDef { ',' VarDef } ';'
-    private Node parseVarDecl() {
+    private VarDecl parseVarDecl() {
+        boolean isStatic = false;
         if (peek() == TokenType.STATICTK) {
+            isStatic = true;
             consume();
         }
-        parseBType();
-        parseVarDef();
+        Token bType = parseBType();
+        List<VarDef> varDefs = new ArrayList<>();
+        varDefs.add(parseVarDef());
         while (peek() == TokenType.COMMA) {
             consume();
-            parseVarDef();
+            varDefs.add(parseVarDef());
         }
         consume(TokenType.SEMICN, "i");
         printSyntaxComponent("VarDecl");
-        return null;
+        return new VarDecl(false,isStatic,bType, varDefs);
     }
 
     // VarDef → Ident [ '[' ConstExp ']' ] | Ident [ '[' ConstExp ']' ] '=' InitVal
-    private Node parseVarDef() {
-        consume(TokenType.IDENFR, "ERROR_CODE"); // Ident
+    private VarDef parseVarDef() {
+        Token ident = currentToken;
+        Expression indexExp = null;
+        InitVal initVal = null;
+        consume(); // Ident
         while (peek() == TokenType.LBRACK) {
             consume(); // '['
-            parseConstExp();
+            indexExp = parseConstExp();
             consume(TokenType.RBRACK, "k"); // ']' 错误检查 k
         }
         if (peek() == TokenType.ASSIGN) {
             consume(); // '='
-            parseInitVal();
+            initVal = parseInitVal();
         }
         printSyntaxComponent("VarDef");
-        return null;
+        return new VarDef(ident,indexExp,initVal);
     }
 
-    private Node parseInitVal() {
+    private InitVal parseInitVal() {
         if (peek() == TokenType.LBRACE) {
+            List<Expression> listValue = new ArrayList<>();
+            int lineNum = currentToken.lineNum();
             consume(); // '{'
             if (peek() != TokenType.RBRACE) {
-                parseExp();
+                listValue.add(parseExp());
                 while (peek() == TokenType.COMMA) {
                     consume(); // ','
-                    parseExp();
+                    listValue.add(parseExp());
                 }
             }
             consume(); // '}'
+            return new InitVal(lineNum,listValue);
         } else {
-            parseExp();
+            int lineNum = currentToken.lineNum();
+            Expression singleValue = parseExp();
+            return new InitVal(singleValue);
         }
-        printSyntaxComponent("InitVal");
-        return null;
+        //printSyntaxComponent("InitVal");
+       // return null;
     }
 
     // Stmt → LVal '=' Exp ';' | [Exp] ';' | Block | ...
-    private Node parseStmt() {
+    private Statement parseStmt() {
+        Statement stmt = null;
         switch (peek()) {
             case LBRACE: // Block
-                parseBlock();
+                stmt = parseBlock();
                 break;
             case IFTK:
                 // 'if' '(' Cond ')' Stmt [ 'else' Stmt ]
+                int ifLineNum = currentToken.lineNum();
                 consume(); // if
                 consume(); // '('
-                parseCond();
+                Expression condition = parseCond();
                 consume(TokenType.RPARENT, "j"); // ')' 错误检查 j
-                parseStmt();
+                Statement thenBranch = parseStmt();
+                Statement elseBranch = null;
                 if (peek() == TokenType.ELSETK) {
                     consume(); // else
-                    parseStmt();
+                    elseBranch = parseStmt();
                 }
+                stmt = new IfStmt(ifLineNum,condition, thenBranch, elseBranch);
                 break;
             case FORTK:
                 // 'for' '(' [ForStmt] ';' [Cond] ';' [ForStmt] ')' Stmt
+                int forLineNum = currentToken.lineNum();
                 consume(); // for
                 consume(); // '('
+                List<AssignStmt> init = null;
                 if (peek() == TokenType.IDENFR) {
-                    parseForStmt();
+                    init = parseForStmt();
                 }
                 consume(TokenType.SEMICN, "i"); // ';'
+                Expression cond = null;
                 if (peek() == TokenType.IDENFR || peek() == TokenType.LPARENT || peek() == TokenType.INTCON
                  || peek() == TokenType.PLUS || peek() == TokenType.MINU || peek() == TokenType.NOT) {
-                    parseCond();
+                    cond = parseCond();
                 }
                 consume(TokenType.SEMICN, "i"); // ';'
+                List<AssignStmt> update = null;
                 if (peek() == TokenType.IDENFR) {
-                    parseForStmt();
+                    update = parseForStmt();
                 }
                 consume(TokenType.RPARENT, "j"); // ')'
-                parseStmt();
+                Statement body = parseStmt();
+                stmt = new ForStmt(forLineNum,init, cond, update, body);
                 break;
             case BREAKTK:
+                int breakLineNum = currentToken.lineNum();
                 consume(); // break
                 consume(TokenType.SEMICN, "i"); // 错误检查 i
+                stmt = new BreakStmt(breakLineNum);
                 break;
             case CONTINUETK:
+                int continueLineNum = currentToken.lineNum();
                 consume(); //continue
                 consume(TokenType.SEMICN, "i"); // 错误检查 i
+                stmt = new ContinueStmt(continueLineNum);
                 break;
             case RETURNTK:
+                int returnLineNum = currentToken.lineNum();
                 consume(); // return
+                Expression returnValue = null;
                 // [Exp]
                 if (peek() == TokenType.IDENFR || peek() == TokenType.LPARENT || peek() == TokenType.INTCON
                  || peek() == TokenType.PLUS || peek() == TokenType.MINU || peek() == TokenType.NOT) {
-                    parseExp();
+                    returnValue = parseExp();
                 }
                 consume(TokenType.SEMICN, "i"); // 错误检查 i
+                stmt = new ReturnStmt(returnLineNum, returnValue);
                 break;
             case PRINTFTK:
                 // 'printf''('StringConst {','Exp}')'';'
+                int printfLineNum = currentToken.lineNum();
                 consume(); // printf
                 consume(); // '('
+                Token formatString = currentToken;
                 consume(); // StringConst
+                List<Expression> args = new ArrayList<>();
                 while (peek() == TokenType.COMMA) {
                     consume(); // ','
-                    parseExp();
+                    args.add(parseExp());
                 }
                 consume(TokenType.RPARENT, "j"); // ')' 错误检查 j
                 consume(TokenType.SEMICN, "i"); // ';' 错误检查 i
+                stmt = new PrintfStmt(formatString, args);
                 break;
             case SEMICN:
+                //空语句
+                int ExpLineNum = currentToken.lineNum();
                 consume(TokenType.SEMICN, "i"); // 明确处理空语句
+                stmt = new ExpStmt(ExpLineNum, null);
                 break;
             default:
                 // 能进入这里的，必然是 LVal=Exp; 或 Exp; (且Exp不为空)
@@ -447,197 +526,233 @@ public class Parser {
                 }
 
                 if (isAssign) {
-                    parseLVal();
+                    LVal lval = parseLVal();
                     consume(); // =
-                    parseExp();
+                    Expression value = parseExp();
+                    consume(TokenType.SEMICN, "i"); // 最后必须有分号
+                    stmt = new AssignStmt(lval, value);
                 } else {
-                    parseExp(); // 移除了 if，因为这里必然有表达式
+                    Expression exp = null;
+                    int line = currentToken.lineNum();
+                    exp = parseExp(); // 移除了 if，因为这里必然有表达式
+                    consume(TokenType.SEMICN, "i"); // 最后必须有分号
+                    stmt = new ExpStmt(line, exp);
                 }
-                consume(TokenType.SEMICN, "i"); // 最后必须有分号
-                break;
+                //consume(TokenType.SEMICN, "i"); // 最后必须有分号
+
         }
 
-
-
         printSyntaxComponent("Stmt");
-        return null;
+        return stmt;
+
+
+
     }
 
     //ForStmt → LVal '=' Exp { ',' LVal '=' Exp }
-    private Node parseForStmt() {
-        parseLVal();
+    private List<AssignStmt> parseForStmt() {
+        List<AssignStmt> assignStmts = new ArrayList<>();
+        LVal lval = parseLVal();
         consume(); // '='
-        parseExp();
+        Expression value = parseExp();
+        assignStmts.add(new AssignStmt(lval, value));
         while (peek() == TokenType.COMMA) {
             consume(); // ','
-            parseLVal();
+            lval = parseLVal();
             consume(); // '='
-            parseExp();
+            value = parseExp();
+            assignStmts.add(new AssignStmt(lval, value));
         }
         printSyntaxComponent("ForStmt");
-        return null;
+        return assignStmts;
     }
 
-    private Node parseCond() {
-        parseLOrExp();
+    private Expression parseCond() {
+        Expression exp = parseLOrExp();
         printSyntaxComponent("Cond");
-        return null;
+        return exp;
     }
 
     // LOrExp → LAndExp | LOrExp '||' LAndExp
     // 消除左递归: LAndExp { '||' LAndExp }
-    private Node parseLOrExp() {
-        parseLAndExp();
+    private Expression parseLOrExp() {
+        Expression left = parseLAndExp();
         printSyntaxComponent("LOrExp");
         while (peek() == TokenType.OR || peek() == TokenType.ERROROR) {
+            Token op = currentToken;
             consume();
-            parseLAndExp();
+            Expression right = parseLAndExp();
+            left = new BinaryExp(left, op, right);
             printSyntaxComponent("LOrExp");
         }
         //printSyntaxComponent("LOrExp");
-        return null;
+        return left;
     }
 
     //LAndExp → EqExp | LAndExp '&&' EqExp
     //消除左递归: EqExp { '&&' EqExp }
-    private Node parseLAndExp() {
-        parseEqExp();
+    private Expression parseLAndExp() {
+        Expression left = parseEqExp();
         printSyntaxComponent("LAndExp");
         //注意这里认为&也是逻辑与，这里不处理。避免错误雪崩
         while (peek() == TokenType.AND || peek() == TokenType.ERRORAND) {
+            Token op = currentToken;
             consume();
-            parseEqExp();
+            Expression right = parseEqExp();
+            left = new BinaryExp(left, op, right);
             printSyntaxComponent("LAndExp");
         }
         //printSyntaxComponent("LAndExp");
-        return null;
+        return left;
     }
 
     //EqExp → RelExp | EqExp ('==' | '!=') RelExp
     //消除左递归: RelExp { ('==' | '!=') RelExp }
-    private Node parseEqExp() {
-        parseRelExp();
+    private Expression parseEqExp() {
+        Expression left = parseRelExp();
         printSyntaxComponent("EqExp");
         while (peek() == TokenType.EQL || peek() == TokenType.NEQ) {
+            Token op = currentToken;
             consume();
-            parseRelExp();
+            Expression right = parseRelExp();
+            left = new BinaryExp(left, op, right);
             printSyntaxComponent("EqExp");
         }
         //printSyntaxComponent("EqExp");
-        return null;
+        return left;
     }
 
     //RelExp → AddExp | RelExp ('<' | '>' | '<=' | '>=') AddExp
     //消除左递归: AddExp { ('<' | '>' | '<=' | '>=') AddExp }
-    private Node parseRelExp() {
-        parseAddExp();
+    private Expression parseRelExp() {
+        Expression left = parseAddExp();
         printSyntaxComponent("RelExp");
         while (peek() == TokenType.LSS || peek() == TokenType.GRE || peek() == TokenType.LEQ || peek() == TokenType.GEQ) {
+            Token op = currentToken;
             consume();
-            parseAddExp();
+            Expression right = parseAddExp();
+            left = new BinaryExp(left, op, right);
             printSyntaxComponent("RelExp");
         }
         //printSyntaxComponent("RelExp");
-        return null;
+        return left;
     }
 
     // Exp → AddExp
-    private Node parseExp() {
-        parseAddExp();
+    private Expression parseExp() {
+        Expression exp = parseAddExp();
         printSyntaxComponent("Exp");
-        return null;
+        return exp;
     }
 
     // AddExp → MulExp { ('+' | '−') MulExp }
     // 注意：文法是左递归的，需要改写成非左递归形式进行分析
-    private Node parseAddExp() {
-        parseMulExp();
+    private Expression parseAddExp() {
+        Expression left = parseMulExp();
         printSyntaxComponent("AddExp");
         while (peek() == TokenType.PLUS || peek() == TokenType.MINU) {
+            Token op = currentToken;//+-
             consume();
-            parseMulExp();
+            Expression right = parseMulExp();
+            left = new BinaryExp(left, op, right);
             printSyntaxComponent("AddExp");
         }
         //printSyntaxComponent("AddExp");
-        return null;
+        return left;
     }
 
     //MulExp → UnaryExp | MulExp ('*' | '/' | '%') UnaryExp
-    private Node parseMulExp() {
-        parseUnaryExp();
+    private Expression parseMulExp() {
+        Expression left = parseUnaryExp();
         printSyntaxComponent("MulExp");
         while (peek() == TokenType.MULT || peek() == TokenType.DIV || peek() == TokenType.MOD) {
+            Token op = currentToken;
             consume();
-            parseUnaryExp();
+            Expression right = parseUnaryExp();
+            left = new BinaryExp(left, op, right);
             printSyntaxComponent("MulExp");
         }
         //printSyntaxComponent("MulExp");
-        return null;
+        return left;
     }
 
     //UnaryExp → PrimaryExp | Ident '(' [FuncRParams] ')' | UnaryOp UnaryExp // j
-    private Node parseUnaryExp() {
+    private Expression parseUnaryExp() {
         if (peek() == TokenType.IDENFR && peek(1) == TokenType.LPARENT) {
+            Token indent = currentToken;
             consume(); // Ident
             consume(); // '('
 //            if (peek() != TokenType.RPARENT) {
 //                parseFuncRParams();
 //            }
+            List<Expression> args = null;
             if (peek() == TokenType.LPARENT || peek() == TokenType.IDENFR || peek() == TokenType.INTCON
                     || peek() == TokenType.PLUS || peek() == TokenType.MINU || peek() == TokenType.NOT) {
-                parseFuncRParams();
+                args = parseFuncRParams();
             }
             consume(TokenType.RPARENT, "j"); // ')'
+            printSyntaxComponent("UnaryExp");
+            return new FuncCall(indent, args);
         } else if (peek() == TokenType.PLUS || peek() == TokenType.MINU || peek() == TokenType.NOT) {
+            Token op = currentToken;
             parseUnaryOp();
-            parseUnaryExp();
+            Expression operand = parseUnaryExp();
+            printSyntaxComponent("UnaryExp");
+            return new UnaryExp(op, operand);
         } else {
-            parsePrimaryExp();
+            printSyntaxComponent("UnaryExp");
+            return parsePrimaryExp();
         }
-        printSyntaxComponent("UnaryExp");
-        return null;
+        //printSyntaxComponent("UnaryExp");
+        //return null;
     }
 
-    private Node parseFuncRParams() {
-        parseExp();
+    private List<Expression> parseFuncRParams() {
+        List<Expression> args = new ArrayList<>();
+        args.add(parseExp());
         while (peek() == TokenType.COMMA) {
             consume(); // ','
-            parseExp();
+            args.add(parseExp());
         }
         printSyntaxComponent("FuncRParams");
-        return null;
+        return args;
     }
 
     // PrimaryExp → '(' Exp ')' | LVal | Number // j
-    private Node parsePrimaryExp() {
+    private Expression parsePrimaryExp() {
+        Expression exp = null;
         if (peek() == TokenType.LPARENT) {
             consume();
-            parseExp();
+            exp = parseExp();
             consume(TokenType.RPARENT, "j");
+            return exp;
         } else if (peek() == TokenType.INTCON) {
-            parseNumber();
+            exp = parseNumber();
         } else {
-            parseLVal();
+            exp = parseLVal();
         }
         printSyntaxComponent("PrimaryExp");
-        return null;
+        return exp;
     }
 
-    private Node parseLVal() {
+    private LVal parseLVal() {
+        Token indent = currentToken;
         consume(); // Ident
+        Expression indexExp = null;
         while (peek() == TokenType.LBRACK) {
             consume(); // '['
-            parseExp();
+            indexExp = parseExp();
             consume(TokenType.RBRACK, "k"); // ']'
         }
         printSyntaxComponent("LVal");
-        return null;
+        return new LVal(indent, indexExp);
     }
 
-    private Node parseNumber() {
+    private NumberLiteral parseNumber() {
+        Token numberToken = currentToken;
         consume(); // IntConst
         printSyntaxComponent("Number");
-        return null;
+        return new NumberLiteral(numberToken);
     }
 
     //UnaryOp → '+' | '−' | '!' 注：'!'仅出现在条件表达式中

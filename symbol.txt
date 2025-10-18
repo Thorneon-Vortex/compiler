@@ -1,0 +1,2 @@
+1 func1 VoidFunc
+2 x Int
