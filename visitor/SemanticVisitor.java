@@ -164,18 +164,6 @@ public class SemanticVisitor {
         if (!hasReturn && node.funcType.type() != TokenType.VOIDTK) {
             errors.add(new SemanticError(body.rightBrace.lineNum(), "g"));
         }
-        // 错误检查f: return 语句的返回值类型与函数返回值类型一致
-//        if (node.funcType.type() == TokenType.VOIDTK && body.getReturnStatement() != null) {
-//            for (ReturnStmt returnStmt : body.getReturnStatement()) {
-//
-//                if (returnStmt.returnValue != null) {
-//                    errors.add(new SemanticError(returnStmt.getLineNum(), "f"));
-//                }
-//
-//            }
-//        }
-
-
 
             symbolTable.exitScope(); // 退出函数作用域
             this.currentFunction = null; // 清除上下文
@@ -457,13 +445,7 @@ public class SemanticVisitor {
 
         if (actualArgCount != expectedArgCount) {
             errors.add(new SemanticError(node.getLineNum(), "d"));
-            //flag = true;
-            // We still visit arguments to find nested errors.
-//            if (node.args != null) {
-//                for (Expression arg : node.args) {
-//                    visit(arg);
-//                }
-//            }
+
             return; // CRITICAL: Mismatched counts, so type checking is impossible. Stop.
         }
 
@@ -493,65 +475,6 @@ public class SemanticVisitor {
         }
     }
 
-//    public void visit(FuncCall node) {
-//        // 第一步：先访问所有参数表达式，检查参数内部的错误
-//        if (node.args != null) {
-//            for (Expression arg : node.args) {
-//                visit(arg);
-//            }
-//        }
-//
-//        // 第二步：查找函数符号
-//        Symbol symbol = symbolTable.lookupSymbol(node.ident.value());
-//
-//        // 第三步：检查函数是否定义（c类错误）
-//        if (symbol == null || !(symbol instanceof FuncSymbol)) {
-//            errors.add(new SemanticError(node.getLineNum(), "c"));
-//            return; // 函数未定义，无法继续检查参数
-//        }
-//
-//        FuncSymbol funcSymbol = (FuncSymbol) symbol;
-//
-//        // 第四步：检查参数个数是否匹配（d类错误）
-//        int actualArgCount = (node.args != null) ? node.args.size() : 0;
-//        List<ValueSymbol> formalParams = funcSymbol.getParams();
-//        int expectedArgCount = (formalParams != null) ? formalParams.size() : 0;
-//
-//        if (actualArgCount != expectedArgCount) {
-//            errors.add(new SemanticError(node.getLineNum(), "d"));
-//            return; // 参数个数不匹配，无法进行类型检查
-//        }
-//
-//        // 第五步：检查参数类型是否匹配（e类错误）
-//        if (node.args != null && formalParams != null) {
-//            for (int i = 0; i < actualArgCount; i++) {
-//                Expression actualArg = node.args.get(i);
-//                ValueSymbol formalParam = formalParams.get(i);
-//
-//                // 获取形参和实参的类型
-//                String formalType = formalParam.getTypeName();
-//                String actualType = getExpressionType(actualArg);
-//
-//                // 如果无法确定实参类型，跳过该参数的类型检查
-//                if (actualType.equals("Unknown")) {
-//                    continue; // 继续检查下一个参数
-//                }
-//
-//                // 判断是否为数组类型
-//                boolean isFormalArray = formalType.contains("Array");
-//                boolean isActualArray = actualType.contains("Array");
-//
-//                // 如果数组性质不匹配，报e类错误
-//                if (isFormalArray != isActualArray) {
-//                    errors.add(new SemanticError(node.getLineNum(), "e"));
-//                    return; // 只报一次e错误，然后停止
-//                }
-//            }
-//        }
-//    }
-    // ============================================================
-// == ADD this helper method inside your SemanticVisitor class ==
-// ============================================================
     private String getExpressionType(Expression exp) {
         if (exp == null) return "Unknown";
         if (exp instanceof NumberLiteral) {
@@ -590,71 +513,5 @@ public class SemanticVisitor {
 
         return "Unknown"; // Default case
     }
-//    private String getExpressionType(Expression exp) {
-//        if (exp == null) {
-//            return "Unknown";
-//        }
-//
-//        // 数字字面量 -> Int
-//        if (exp instanceof NumberLiteral) {
-//            return "Int";
-//        }
-//
-//        // 左值表达式
-//        if (exp instanceof LVal) {
-//            LVal lval = (LVal) exp;
-//            Symbol symbol = symbolTable.lookupSymbol(lval.ident.value());
-//
-//            // 如果符号未定义或不是变量，返回Unknown
-//            if (symbol == null || !(symbol instanceof ValueSymbol)) {
-//                return "Unknown";
-//            }
-//
-//            ValueSymbol valueSymbol = (ValueSymbol) symbol;
-//            String symbolType = valueSymbol.getTypeName();
-//            boolean isSymbolArray = symbolType.contains("Array");
-//
-//            // 如果符号是数组且带索引访问（如a[0]），返回Int
-//            if (isSymbolArray && lval.exp != null) {
-//                return "Int";
-//            }
-//
-//            // 如果符号是数组但没有索引访问（如作为参数传递的a），返回数组类型
-//            if (isSymbolArray && lval.exp == null) {
-//                return symbolType; // 保留具体的数组类型（IntArray等）
-//            }
-//
-//            // 否则返回符号的类型
-//            return symbolType;
-//        }
-//
-//        // 函数调用表达式
-//        if (exp instanceof FuncCall) {
-//            FuncCall funcCall = (FuncCall) exp;
-//            Symbol symbol = symbolTable.lookupSymbol(funcCall.ident.value());
-//
-//            // 如果函数未定义，返回Unknown
-//            if (symbol == null || !(symbol instanceof FuncSymbol)) {
-//                return "Unknown";
-//            }
-//
-//            FuncSymbol funcSymbol = (FuncSymbol) symbol;
-//            String funcType = funcSymbol.getTypeName();
-//
-//            // VoidFunc返回Void，IntFunc返回Int
-//            if (funcType.equals("VoidFunc")) {
-//                return "Void";
-//            } else {
-//                return "Int";
-//            }
-//        }
-//
-//        // 二元表达式和一元表达式都返回Int
-//        if (exp instanceof BinaryExp || exp instanceof UnaryExp) {
-//            return "Int";
-//        }
-//
-//        // 其他情况返回Unknown
-//        return "Unknown";
-//    }
+
 }

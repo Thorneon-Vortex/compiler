@@ -4,7 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3eb10a45-c335-4ac3-9094-dcdcbd758c0a" name="Changes" comment="" />
+    <list default="true" id="3eb10a45-c335-4ac3-9094-dcdcbd758c0a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/codegen/ir/Argument.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/BasicBlock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/Function.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/Module.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/Use.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/inst/AllocaInst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/inst/BinaryInst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/inst/Instruction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/inst/StoreInst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/types/ArrayType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/types/IntegerType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/types/LabelType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/types/PointerType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/types/Type.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/types/VoidType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/values/Constant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/values/ConstantInt.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/values/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/codegen/ir/values/Value.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visitor/SemanticVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/visitor/SemanticVisitor.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,6 +39,9 @@
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
@@ -37,18 +63,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Compiler.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/code/compilerSecond&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Compiler.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/geniuswan/IdeaProjects/complieDemo/compiler",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="compileDemo" />
@@ -64,6 +99,14 @@
       </method>
     </configuration>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -72,7 +115,14 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1759933287502</updated>
+      <workItem from="1761128526539" duration="671000" />
+      <workItem from="1761132333788" duration="2507000" />
+      <workItem from="1761219109965" duration="646000" />
+      <workItem from="1761329426832" duration="2032000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
 </project>
